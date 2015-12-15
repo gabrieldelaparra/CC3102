@@ -1,30 +1,52 @@
-\documentclass[spanish]{article}
+\documentclass{article}
 
-\usepackage[utf8]{inputenc}
+%Used for PDFTex
+%\usepackage[utf8]{inputenc}
+
+%Language Imports:
+\usepackage[spanish]{babel}
+\usepackage{fontspec}
+
+%Headers & Footers:
 \usepackage{fancyhdr} % Required for custom headers
 \usepackage{lastpage} % Required to determine the last page for the footer
 \usepackage{extramarks} % Required for headers and footers
+
+%Math Symbols:
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{mathtools}
+
+%Pictures
 %\usepackage{graphicx} % Required to insert images
-\usepackage{babel}
+
+%Hyperlinks:
 %\usepackage{url}
-\usepackage{tikz}
-\usepackage{tabto}
 
-\usetikzlibrary{automata,positioning}
-\usetikzlibrary{babel}
+%Para diagramas de estados:
+%\usepackage{tikz}
+%\usetikzlibrary{automata,positioning}
+%\usetikzlibrary{babel}
 
-\def\e{\varepsilon}
-\def\ra{\rightarrow}
+%Para espacios, usado en diagramas de estados:
+%\usepackage{tabto}
 
+%Font <3
+\setmainfont{erewhon}
 
+%Variable Definitions:
+%\def\e{\varepsilon}
+%\def\ra{\rightarrow}
+\def\P{\mathcal{P}}
+\def\NP{\mathcal{NP}}
+
+%Cover:
 \newcommand{\me}{Gabriel De La Parra}
 \newcommand{\class}{CC3102 - Teoría de la Computación}
 \newcommand{\institution}{Departamento de Ciencias de la Computación\\ \textsc{Universidad de Chile}}
-\newcommand{\task}{Tarea 3: Reducciones de mapeo, P vs. NP}
+\newcommand{\task}{Tarea 3: Reducciones polinomiales, P vs. NP}
 
+%Margins
 \topmargin=-.45in
 \evensidemargin=0in
 \oddsidemargin=0in
@@ -32,7 +54,7 @@
 \textheight=9.0in
 \headsep=0.25in
 
-
+%Header & Footer:
 \pagestyle{fancy}
 \lhead{\me} % Top left header
 \rhead{\task} % Top right header
@@ -53,8 +75,91 @@
 \newpage
 
 \section{Problema 1}
-\textbf{Un lenguaje $A$ es no trivial si $A\neq\emptyset$ y $A\neq\Sigma^{*}$. Demuestre que si $\mathcal{P} = \mathcal{NP}$ entonces todo lenguaje no trivial en $\mathcal{NP}$ es $\mathcal{NP}$-Completo.}
+\textbf{Un lenguaje $A$ es no trivial si $A\neq\emptyset$ y $A\neq\Sigma^{*}$. Demuestre que si $\P = \NP$ entonces todo lenguaje no trivial en $\NP$ es $\NP$-Completo.}
+\\\\
+Por definición, para que un lenguaje sea $\NP$-Completo, se debe demostrar que:
+\begin{itemize}
+	\item $A$ está en $\NP$, ya en el enunciado.
+	\item Existe una reducción polinomial de $A$ a un lenguaje \textit{'más difícil'} $B$, tal que si $w \in A$, $f(w) \in B$ y si $w' \notin A$, $f(w') \notin B$.
+\end{itemize}
 
-askdmmsak
+A partir del enunciado: 
+\begin{itemize}
+	\item Si $\P=\NP$, todo problema en $\NP$ se puede resolver en tiempo polinomial de forma determinista. Es decir, existe una MT que puede resolver el problema de $\NP$ en tiempo polinomial. 
+	\item Si $A\neq\emptyset$ y $A\neq\Sigma^{*}$, entonces existen elementos que $w \in A$ y elementos $w' \notin A$. Estos elementos se puede utilizar para hacer una reducción. En el caso que $A=\emptyset$ o $A=\Sigma^*$, no habrían valores $w$ dentro/fuera de $A$ que sirvan para hacer una reducción.
+\end{itemize}
+
+De los puntos anteriores, se debe construir una reducción polinomial a $B$. Si $B$ es $\NP$-Completo, también es $\NP$, y por la asunción, también es $\P$, por lo que se puede resolver en tiempo polinomial.
+\\\\
+Ahora bien, se puede construir una máquina $M$ que decida $B$ y construir una máquina $M'$ con esta, que decida $A$. 
+\begin{itemize}
+	\item Si $M$ acepta $x \in B$, $M'$ acepta $w \in A$. 
+	\item Si $M$ rechaza $x' \notin B$, $M'$ rechaza $w' \notin A$. 
+\end{itemize}
+La reducción se puede construir en tiempo polinomial. Como esta reducción existe, $A\in\NP$-Completo.
+
+\section{Problema 2}
+\textbf{Describa el problema INDSET como un problema de decisión de lenguajes y demuestre que es $\NP$-Completo via una reducción desde CLIQUE.}
+\\\\
+Se desea demostrar que existe una reducción de INDSET a CLIQUE en tiempo polinomial:
+\begin{center}
+	CLIQUE$\leq_{p}$INDSET
+\end{center}
+
+La definición entregada para INDSET se puede entender como un 'inverso' de CLIQUE. En CLIQUE, hay que encontrar k-nodos estén conectados todos con todos. En INDSET hay que encontrar k-nodos que no estén conectados entre ellos, "ninguno con ninguno", como analogía.
+\\\\
+La reducción se hace a partir de un problema en CLIQUE.
+\\\\
+A partir de un grafo $G'=(V',E')$ con CLIQUE-$k'$, se debe construir un grafo $G=(V,E)$ tal que $G'$ tiene un CLIQUE-$k' \iff G$ tiene un INDSET-$k$. Esta construcción debe correr en tiempo polinomial.
+\\\\
+Se toman de esta forma:
+\begin{itemize}
+	\item Los nodos son los mismos en CLIQUE e INDSET	
+	\item Para cada par de nodos, si hay un arco entre ellos en $E' \in G'$, no debe haber un arco entre ellos en $E \in G$. De la misma forma, si no hay un arco entre ellos en $G'$, se agrega un arco entre ellos en $G$
+	\item El tamaño $k'$ del CLIQUE será el mismo tamaño $k$ del INDSET
+\end{itemize}
+Como lo anterior se puede realizar proporcionalmente al tamaño de $E'$, el algoritmo se puede ejecutar en tiempo polinomial. La demostración de que la reducción funciona para ambos lados es intuitiva. Al hacer el cambio, si existían las condiciones para CLIQUE, deben estar para INDSET, de la misma forma, si están para INDSET, deben estar para CLIQUE. 
+\\\\
+Como existe una reducción en tiempo polinomial, INDSET es $\NP$-Completo
+
+\section{Problema 3}
+\textbf{Demuestre que $A_{MT}$ es $\NP$-duro. \textit{Pista}: Reduzca SAT a $A_{MT}$; ¿Pudiera $A_{MT}$ ser $\NP$-Completo? Justifique su respuesta.}
+\\\\
+Un problema es $\NP$-duro si se puede hacer una reducción polinomial a un problema $\NP$-Completo. Esto quiere decir que es, por lo menos, tan difícil como un problema $\NP$-Completo. Esto no implica que el problema deba estar en $\NP$ ni que sea un problema de decisión.
+\\\\
+Para este problema, se solicita hacer la reducción polinomial a $SAT$. Si existe un algoritmo para resolver $SAT$, este se puede usar para decidir $A_{MT}$ a través de una reducción en tiempo polinomial.
+\\\\
+Sea $M$ es la MT que decide $SAT$. Sea $\vec{a}^{\,}$ la entrada de esa máquina $M$, se puede construir un $M'$ con $M$, tal que si $M(\vec{a}^{\,})$ acepta, $M'$ se detiene y acepta la entrada. Esto hasta encontrar un $\vec{a}^{\,}$ que cumpla $SAT$. Si no existe tal condición, la máquina $M'$ loopeará. Esta conversión de $M'$ a $M$ toma tiempo polinomial.
+\\\\
+Lo que no se ha determinado es si $A_{MT}$ es $\NP$-Completo. Para esto habría que probar que la máquina en la entrada de $A_{MT}$ siempre se detiene y decide y que por lo tanto estaría en $\NP$, lo cual se ha demostrado anteriormente que no se cumple. De lo anterior, $A_{MT} \notin \NP$-Completo.
+
+\section{Prolema 4}
+\textbf{Demuestre que CIRCUITOHAM es $\NP$-Completo; Demuestre que CIRCUITOHAMND es $\NP$-Completo}
+\\\\
+Para la primera parte, es necesario demostrar que:
+\begin{itemize}
+	\item $(1)$ CIRCUITOHAM es $\NP$;
+	\item $(2)$ Existe una reducción polinomial de CIRCUITOHAM a CAMINO HAM.
+\end{itemize}
+
+Sea $G=\{V,E\}$ el grafo que define CIRCUITOHAM. Para $(1)$, bastaría con tener un certificado $c$. Se puede construir un verificador $V$. $V$ toma $c$ y prueba si desde el primer nodo en $c$ existen los arcos en $E$ que satisfagan CIRCUITOHAM. Esto ocurre en orden polinomial proporcional al tamaño de $E$.
+\\\\
+Para $(2)$, intuitivamente, a partir de un grafo $G \in$ CAMINOHAM, se podría crear un grafo $G'$, en el que se agrega un nodo y se conecta hacia/desde todos los otros nodos. Si existe un CAMINOHAM en el grafo $G$, existe ahora un CIRCUITOHAM en el grafo $G'$. Análogamente, si no existía un CAMINOHAM en $G$, no existirá un CIRCUITO en $G'$. Ahora bien, si existe un CIRCUITOHAM en $G'$, significa que debe haber un CAMINOHAM en $G$.
+\\\\
+Para la segunda parte del problema, se pide, a partir de un grafo no dirigido $H$, en el que hay un CIRCUITOHAMND, realizar una reducción a CIRCUITOHAM.
+\\\\
+La verificación de $\NP$ se puede hacer igual que en el caso anterior, verificando un certificado, que deberá tener conexiones entre todos los nodos del grafo $H$ sin repeticiones.
+\\\\
+Para la reducción se sugiere agregar una tripleta de nodos por cada nodo en $G \in$ CIRCUITOHAM. El nuevo grafo $H$ tiene:
+\begin{itemize}
+	\item Tres nodos por cada nodo de $G$. Sean $v_{i,0}, v_{i,1}, v_{i,2}$ estos nodos.
+	\item Arcos no dirigidos entre $\{v_{i,0}, v_{i,1}\}$, $\{v_{i,1}, v_{i,2}\}$.
+	\item Arcos no dirigidos según la dirección original, de tal forma que si entran a la tripleta, lo hacen a través de $v_{i,0}$ y si salen, a través de $v_{i,2}$.
+\end{itemize}
+Al realizar esta construcción, se debe cumplir que se visiten todos los nodos del nuevo grafo $H$. Si existe un CIRCUITOHAM $G$. Esto es valido para los dos lados. Si existe una solución para $G$, esta debe visitar los 3 nodos en $H$. De la misma forma, si se visitan todos los nodos en $H$, quiere decir que en $G$ se estarían visitando todos los nodos según la dirección de los arcos.
+\\\\
+Se puede construir un CIRCUITOHAMND $H$ con orden polinomial, considerando los 3 nodos y los nuevos arcos que se trazan como se describió anteriormente.
+\\\\
+Como se puede verificar que es posible realizar la reducción y que adicionalmente CIRCUITOHAMND es en $\NP$, se concluye que CIRCUITOHAMND es $\NP$-Completo.
 
 \end{document}
